@@ -81,7 +81,7 @@ split_token_test() ->
 -endif.
 
 sign(<<"HS256">>, Payload, Key) ->
-    base64:encode(crypto:hmac(sha256, Key, Payload));
+    base64:encode(crypto:mac(hmac, sha256, Key, Payload));
 sign(_, _, _) ->
     throw(unsupported_algorithm).
 

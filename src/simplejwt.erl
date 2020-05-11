@@ -16,9 +16,9 @@ decode(Key, Token) ->
 
 parse_token(Key, Token) ->
     [Header, Body, Sign] = split_token(Token),
-    #{<<"alg">> := Alg} = jsone:decode(base64:decode(Header)),
+    #{<<"alg">> := Alg} = jsone:decode(base64url:decode(Header)),
     true = validate_sign(Alg, Key, Header, Body, Sign),
-    Data = jsone:decode(base64:decode(Body)),
+    Data = jsone:decode(base64url:decode(Body)),
     true = not_expired(Data),
     Data.
 
@@ -38,8 +38,8 @@ encode(Alg, Key, Data, ExpirationSeconds) ->
 
 make_token(Alg, Key, Data, ExpirationSeconds) ->
     ExpireTime = ExpirationSeconds + epoch(),
-    Body = base64:encode(jsone:encode(Data#{<<"exp">> => ExpireTime})),
-    Header = base64:encode(jsone:encode(header(Alg))),
+    Body = base64url:encode(jsone:encode(Data#{<<"exp">> => ExpireTime})),
+    Header = base64url:encode(jsone:encode(header(Alg))),
     Payload = <<Header/binary, ".", Body/binary>>,
     Sign = sign(Alg, Payload, Key),
     <<Payload/binary, ".", Sign/binary>>.
@@ -81,7 +81,7 @@ split_token_test() ->
 -endif.
 
 sign(<<"HS256">>, Payload, Key) ->
-    base64:encode(crypto:mac(hmac, sha256, Key, Payload));
+    base64url:encode(crypto:mac(hmac, sha256, Key, Payload));
 sign(_, _, _) ->
     throw(unsupported_algorithm).
 

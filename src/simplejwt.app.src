@@ -1,6 +1,6 @@
 {application, simplejwt,
  [{description, "An OTP library"},
-  {vsn, "0.2.2"},
+  {vsn, "0.3.0"},
   {registered, []},
   {applications, [kernel, stdlib, crypto, jsone]},
   {env,[]},

@@ -2,7 +2,16 @@
 
 -module(simplejwt).
 
--export([encode/3, encode/4, decode/2]).
+-export([encode/3, encode/4, decode/2, decode_jsonerl/2, encode_jsonerl/3,
+	 encode_jsonerl/4]).
+
+decode_jsonerl(Key, Token) ->
+    case decode(Key, Token) of
+	{ok, Encoded} ->
+	    {ok, jsonerl:decode(Encoded)};
+	invalid_token ->
+	    invalid_token
+    end.
 
 decode(Key, Token) ->
     try
@@ -23,8 +32,14 @@ parse_token(Key, Token) ->
 not_expired(#{<<"exp">> := Exp}) ->
     Exp > epoch().
 
+encode_jsonerl(Key, Data, ExpirationSeconds) ->
+    encode(Key, jsonerl:encode(Data), ExpirationSeconds).
+
 encode(Key, Data, ExpirationSeconds) ->
     encode(<<"HS256">>, Key, Data, ExpirationSeconds).
+
+encode_jsonerl(Alg, Key, Data, ExpirationSeconds) ->
+    encode(Alg, Key, jsonerl:encode(Data), ExpirationSeconds).
 
 encode(Alg, Key, Data, ExpirationSeconds) ->
     try
@@ -55,6 +70,12 @@ encode_test() ->
     %?debugFmt("token ~p~n", [Token]),
     {ok, D1} = decode(?TEST_KEY, Token),
     %?debugFmt("decoded ~p~n", [D1]),
+    ?assert(D1 =:= Data).
+
+encode_jsonerl_test() ->
+    Data = #{<<"a">> => #{<<"b">> => 2}},
+    {ok, Token} = encode(?TEST_KEY, Data, 60),
+    {ok, D1} = decode(?TEST_KEY, Token),
     ?assert(D1 =:= Data).
 
 sleep(Seconds) ->

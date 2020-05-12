@@ -1,0 +1,8 @@
+[{<<"base64url">>,
+  {git,"https://github.com/dvv/base64url",
+       {ref,"bf1360685da704c8453aba2268c4698c959d2ba4"}},
+  0},
+ {<<"jsone">>,
+  {git,"https://github.com/sile/jsone",
+       {ref,"2ebbe2361d19af3cc4c94b7345972710aec4fbda"}},
+  0}].

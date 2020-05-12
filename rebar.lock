@@ -5,4 +5,8 @@
  {<<"jsone">>,
   {git,"https://github.com/sile/jsone",
        {ref,"2ebbe2361d19af3cc4c94b7345972710aec4fbda"}},
+  0},
+ {<<"jsonerl">>,
+  {git,"https://github.com/wallacegibbon/jsonerl",
+       {ref,"b5706ead97c7b3c6fb8142117eab2b8ee425f749"}},
   0}].

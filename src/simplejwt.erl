@@ -4,8 +4,6 @@
 
 -export([encode/3, encode/4, decode/2]).
 
--include_lib("eunit/include/eunit.hrl").
-
 decode(Key, Token) ->
     try
 	{ok, maps:without([<<"exp">>], parse_token(Key, Token))}
@@ -46,6 +44,8 @@ make_token(Alg, Key, Data, ExpirationSeconds) ->
 
 
 -ifdef(TEST).
+
+-include_lib("eunit/include/eunit.hrl").
 
 -define(TEST_KEY, "hello, this is a test").
 

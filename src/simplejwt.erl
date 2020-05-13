@@ -24,6 +24,8 @@ decode(Key, Token) ->
     try
 	{ok, parse_token(Key, Token)}
     catch
+	throw:format_error ->
+	    {invalid_token, format_error};
 	error:I ->
 	    {invalid_token, I}
     end.
@@ -34,8 +36,12 @@ parse_token(Key, Token) ->
     true = validate_sign(Alg, Key, Header, Body, Sign),
     Data = jsone:decode(base64url:decode(Body)),
     true = not_expired(Data),
-    #{<<"exp">> := _, <<"payload">> := Val} = Data,
-    Val.
+    fetch_payload(Data).
+
+fetch_payload(#{<<"exp">> := _, <<"payload">> := Val}) ->
+    Val;
+fetch_payload(_) ->
+    throw(format_error).
 
 not_expired(#{<<"exp">> := Exp}) ->
     Exp > epoch().
@@ -94,8 +100,11 @@ expire_test() ->
     Data = #{<<"a">> => #{<<"b">> => 2}},
     {ok, Token} = encode(?TEST_KEY, Data, 1),
     {ok, Data} = decode(?TEST_KEY, Token),
-    sleep(1),
-    {invalid_token, _} = decode(?TEST_KEY, Token).
+    sleep(2),
+    %{invalid_token, _} = decode(?TEST_KEY, Token).
+    R = decode(?TEST_KEY, Token),
+    %?debugFmt("decode expired, ~p~n", [R]),
+    {invalid_token, _} = R.
 
 -endif.
 

@@ -9,16 +9,16 @@ decode_jsonerl(Key, Token) ->
     case decode(Key, Token) of
 	{ok, Encoded} ->
 	    {ok, jsonerl:decode(Encoded)};
-	invalid_token ->
-	    invalid_token
+	{invalid_token, _} = E ->
+	    E
     end.
 
 decode(Key, Token) ->
     try
-	{ok, maps:without([<<"exp">>], parse_token(Key, Token))}
+	{ok, parse_token(Key, Token)}
     catch
-	error:_ ->
-	    invalid_token
+	error:I ->
+	    {invalid_token, I}
     end.
 
 parse_token(Key, Token) ->
@@ -27,7 +27,8 @@ parse_token(Key, Token) ->
     true = validate_sign(Alg, Key, Header, Body, Sign),
     Data = jsone:decode(base64url:decode(Body)),
     true = not_expired(Data),
-    Data.
+    #{<<"exp">> := _, <<"payload">> := Val} = Data,
+    Val.
 
 not_expired(#{<<"exp">> := Exp}) ->
     Exp > epoch().
@@ -45,13 +46,14 @@ encode(Alg, Key, Data, ExpirationSeconds) ->
     try
 	{ok, make_token(Alg, Key, Data, ExpirationSeconds)}
     catch
-	error:_ ->
-	    failed
+	error:I ->
+	    {failed, I}
     end.
 
 make_token(Alg, Key, Data, ExpirationSeconds) ->
     ExpireTime = ExpirationSeconds + epoch(),
-    Body = base64url:encode(jsone:encode(Data#{<<"exp">> => ExpireTime})),
+    Body = base64url:encode(jsone:encode(#{<<"exp">> => ExpireTime,
+					   <<"payload">> => Data})),
     Header = base64url:encode(jsone:encode(header(Alg))),
     Payload = <<Header/binary, ".", Body/binary>>,
     Sign = sign(Alg, Payload, Key),
@@ -86,7 +88,7 @@ expire_test() ->
     {ok, Token} = encode(?TEST_KEY, Data, 1),
     {ok, Data} = decode(?TEST_KEY, Token),
     sleep(1),
-    invalid_token = decode(?TEST_KEY, Token).
+    {invalid_token, _} = decode(?TEST_KEY, Token).
 
 -endif.
 

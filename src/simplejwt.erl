@@ -8,7 +8,14 @@
 decode_jsonerl(Key, Token) ->
     case decode(Key, Token) of
 	{ok, Encoded} ->
-	    {ok, jsonerl:decode(Encoded)};
+	    % jsonerl will throw error when decoding non-existing atom
+	    try jsonerl:decode(Encoded) of
+		V ->
+		    {ok, V}
+	    catch
+		throw:E ->
+		    {invalid_token, E}
+	    end;
 	{invalid_token, _} = E ->
 	    E
     end.

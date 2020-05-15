@@ -1,11 +1,5 @@
 {application, simplejwt,
  [{description, "An OTP library"},
-  {vsn, "0.4.4"},
-  {registered, []},
-  {applications, [kernel, stdlib, crypto, jsone]},
-  {env,[]},
-  {modules, []},
-
-  {licenses, ["Apache 2.0"]},
-  {links, []}
+  {vsn, "0.4.5"},
+  {applications, [kernel, stdlib, crypto, jsone]}
  ]}.

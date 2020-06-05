@@ -5,6 +5,10 @@
 -export([encode/3, encode/4, decode/2, decode_jsonerl/2, encode_jsonerl/3,
 	 encode_jsonerl/4]).
 
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
+
 decode_jsonerl(Key, Token) ->
     case decode(Key, Token) of
 	{ok, Encoded} ->
@@ -74,8 +78,6 @@ make_token(Alg, Key, Data, ExpirationSeconds) ->
 
 
 -ifdef(TEST).
-
--include_lib("eunit/include/eunit.hrl").
 
 -define(TEST_KEY, "hello, this is a test").
 

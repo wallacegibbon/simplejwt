@@ -18,20 +18,7 @@ simplejwt:decode(<<"key">>, T).
 %> {ok,<<"blah">>}
 ```
 
-with [jsonerl][jsonerlurl], you can encode any erlang object.
-
-```erlang
-{ok, T} = simplejwt:encode_jsonerl(<<"key">>, {1,2,3}, 1000).
-%> {ok,<<"ey...J9.eyJl...MiwzXX1"...>>}
-
-simplejwt:decode_jsonerl(<<"key">>, T).
-%> {ok,{1,2,3}}
-```
-
 ## limits
 
 only HS256 is supported now.
-
-
-[jsonerlurl]: https://github.com/wallacegibbon/jsonerl
 

@@ -1,14 +1,14 @@
-## why there is a `encode_jsonerl`
+`simplejwt:encode` only support JSON-compatible data like number,
+string, list, maps...
 
-First, `simplejwt:encode` only support JSON-compatible data like number,
-string, list... data like tuple, is not JSON-compatible.
+data like tuple is not JSON-compatible.
 
 ```erlang
 {ok, T} = simplejwt:encode(<<"key">>, {1,2,3}, 1000).
 %  ** exception error: no match of right hand side value {failed,badarg}
 ```
 
-And it will convert atom to bianry automatically.
+Things that JSON do not support like atom will be converted to bianry:
 
 ```erlang
 {ok, T} = simplejwt:encode(<<"key">>, blah, 1000).
@@ -17,8 +17,6 @@ And it will convert atom to bianry automatically.
 simplejwt:decode(<<"key">>, T).
 %> {ok,<<"blah">>}
 ```
-
-## limits
 
 only HS256 is supported now.
 
